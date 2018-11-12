@@ -1,0 +1,79 @@
+<div>
+  <v-app>
+    <v-content>
+      <v-container>
+        <v-toolbar>
+          <v-toolbar-title>Messages</v-toolbar-title>
+          <v-spacer/>
+          <v-text-field solo @change="search" type="search" placeholder="search..." />
+        </v-toolbar>
+
+        <v-layout
+          justify-space-between
+          pa-3
+          >
+          <v-flex xs5>
+            <v-treeview
+              ref="msgtree"
+              :active.sync="active"
+              :open.sync="open"
+              :items="items"
+              active-class="selected-msg"
+              class="grey lighten-5"
+              open-on-click
+              transition
+              v-on:update:open="opened"
+              >
+            </v-treeview>
+          </v-flex>
+          <v-flex
+            d-flex
+            >
+              <v-card
+                v-if="selected"
+                :key="selected.id"
+                class="pt-4 mx-auto"
+                flat
+                max-width="50vw"
+                max-height="96vh"
+                style="overflow:scroll;position:sticky;top:0px;margin-bottom:1vh;border-top:1vh solid black;;border-bottom:1vh solid black"
+                >
+                <v-card-text>
+                  <h3 class="headline mb-2">{{ selected.name }}</h3>
+                  <vue-json-pretty
+                    :deep="1"
+                    :data="selected.data.msg"
+                    >
+                  </vue-json-pretty>
+                </v-card-text>
+
+                <v-divider></v-divider>
+
+                <v-card-text>
+                  <h4 class="headline mb-2">result</h4>
+                  <vue-json-pretty
+                    :deep="1"
+                    :data="selected.data.res || selected.data.err"
+                    >
+                  </vue-json-pretty>
+                </v-card-text>
+
+                <v-divider></v-divider>
+                <v-card-text>
+                  <h4 class="headline mb-2">meta</h4>
+
+                  <vue-json-pretty
+                    :deep="1"
+                    :data="selected.data.meta"
+                    >
+                  </vue-json-pretty>
+                </v-card-text>
+
+              </v-card>
+
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
+</div>

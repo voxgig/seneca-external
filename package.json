@@ -1,0 +1,46 @@
+{
+  "name": "@seneca/external",
+  "version": "0.0.1",
+  "description": "Handle external Seneca messages safely.",
+  "main": "external.js",
+  "scripts": {
+    "watch": "webpack --watch",
+    "test": "lab -P test -t 80 -I URL,URLSearchParams",
+    "prettier": "prettier --write --no-semi --single-quote *.js lib/*.js test/*.js",
+    "coveralls": "lab -s -P test -r lcov | coveralls",
+    "clean": "rm -rf node_modules yarn.lock package-lock.json",
+    "repo-tag": "REPO_VERSION=`node -e \"console.log(require('./package').version)\"`; echo TAG: v$REPO_VERSION; git commit -a -m v$REPO_VERSION; git push; git tag v$REPO_VERSION; git push --tags;",
+    "repo-publish": "npm run repo-tag; npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voxgig/seneca-external.git"
+  },
+  "author": "Richard Rodger (richardrodger.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/voxgig/seneca-external/issues"
+  },
+  "homepage": "https://github.com/voxgig/seneca-external#readme",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "external.js",
+    "lib/errors.js"
+  ],
+  "engines": {
+    "node": ">=8"
+  },
+  "dependencies": {
+    "jsonic": "^0.3.1"
+  },
+  "devDependencies": {
+    "code": "5",
+    "coveralls": "3",
+    "lab": "17",
+    "prettier": "1",
+    "seneca": "github:senecajs/seneca#3.8.0-rc2",
+    "seneca-plugin-validator": "0",
+    "seneca-promisify": "0"
+  }
+}
