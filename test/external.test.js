@@ -125,8 +125,9 @@ lab.test('happy', async () => {
 
 function seneca_instance(config) {
   return Seneca({legacy:{transport:false}})
-    //.test('print')
-    .quiet()
+    .test('print')
+    //.quiet()
     .use('promisify')
+    //.use('@seneca/hapi')
     .use(Plugin, config.external)
 }

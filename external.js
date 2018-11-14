@@ -32,6 +32,17 @@ function external(options) {
   pins.forEach(pin => allow.add(pin, true))
 
   this.prepare(async function() {
+    // TODO: seneca.has needs test and fix
+    if(this.private$.actrouter.find({role:'web-handler',hook:'custom'}, true)) {
+      await this.post({
+        role:'web-handler',hook:'custom',
+        custom: function(custom) {
+          custom.external = custom.external || {}
+          custom.external.safe = false
+        }
+      })
+    }
+    
     // NOTE: must follow handling of message custom meta data
     this.inward(function(ctxt, data) {
       const meta = data.meta
@@ -49,6 +60,7 @@ function external(options) {
       else {
         if(null != meta.custom.external &&
            !data.meta.custom.external.allow && 
+           null != meta.custom.external.secret &&
            meta.custom.external.secret != secret)
         {
           return {

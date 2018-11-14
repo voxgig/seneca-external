@@ -31,15 +31,17 @@
   "engines": {
     "node": ">=8"
   },
-  "dependencies": {
-    "jsonic": "^0.3.1"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@seneca/hapi": "0.0.2",
     "code": "5",
     "coveralls": "3",
+    "hapi": "17.7",
+    "inert": "5.1",
     "lab": "17",
     "prettier": "1",
     "seneca": "github:senecajs/seneca#3.8.0-rc2",
+    "seneca-browser": "0",
     "seneca-plugin-validator": "0",
     "seneca-promisify": "0"
   }
