@@ -21,7 +21,7 @@ function external(options) {
   })
   
   // only allow messages where custom.secret matches
-  const secret = null == options.secret ? '' : options.secret
+  const secret = options.secret
   
   // normalize the list of pins
   var pins = options.pin || options.pins
@@ -45,46 +45,50 @@ function external(options) {
     
     // NOTE: must follow handling of message custom meta data
     this.inward(function(ctxt, data) {
-      const meta = data.meta
-
-      if(0 === meta.parents.length) {
-        meta.custom.external = Object.assign({
-          safe: true,
-          secret: secret,
-          origin: ctxt.seneca.id
-        }, data.meta.custom.external)
-
-        // we orginated this message
-        return
+      const remote = data.meta.remote
+      const external = data.meta.custom.external = data.meta.custom.external || {}
+      
+      // Allow any message if it originated locally
+      if(remote) {
+        external.safe = false
+        external.allow = false
       }
       else {
-        if(null != meta.custom.external &&
-           !data.meta.custom.external.allow && 
-           null != meta.custom.external.secret &&
-           meta.custom.external.secret != secret)
-        {
+        Object.assign(external,{
+          safe: true,
+          allow: true,
+          secret: secret,
+          origin: ctxt.seneca.id
+        },external)
+        return
+      }
+
+      // Disallow message if secrets don't match.
+      if( null != external.secret && null != secret) {
+        if( external.secret === secret) {
+          external.allow = true
+        }
+        else {
           return {
             kind: 'error',
             code: 'external-bad-secret'
           }
         }
       }
+        
+      // Allow messages if parent is allowed
+      if( external.allow ) {
+        return
+      }
 
-      // External messages are rejected unless white-listed
-      if(null == data.meta.custom.external ||
-         (!data.meta.custom.external.safe &&
-          !data.meta.custom.external.allow)
-        )
-      {
-        if(!allow.find(data.msg)) {
-          return {
-            kind: 'error',
-            code: 'external-not-allowed'
-          }
-        }
-        else {
-          data.meta.custom.external = data.meta.custom.external || {}
-          data.meta.custom.external.allow = true
+      if(allow.find(data.msg)) {
+        external.allow = true
+        return
+      }
+      else {
+        return {
+          kind: 'error',
+          code: 'external-not-allowed'
         }
       }
     })

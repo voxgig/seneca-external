@@ -56,7 +56,7 @@ async function setup() {
     method: 'POST',
     path: '/msg',
     config: {
-      handler: si.export('hapi/handler')
+      handler: si.export('hapi/action_handler')
     }
   })
 
