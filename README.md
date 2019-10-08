@@ -1,4 +1,5 @@
 # seneca-external
+
 [Seneca](senecajs.org) Handle external Seneca messages safely.
 
 [![Npm][BadgeNpm]][Npm]
