@@ -1,28 +1,36 @@
 /* Copyright (c) 2018 voxgig and other contributors, MIT License */
 'use strict'
 
-
-const Util = require('util')
-
+const Joi = require('@hapi/joi')
 
 module.exports = external
 
+external.errors = {
+  no_secret:
+    'No secret defined but secret_required is true. Options were: <%=opts%>'
+}
+
 external.defaults = {
+  secret: Joi.string().default(null),
+  secret_allows: Joi.boolean().default(false),
+  secret_required: Joi.boolean().default(false),
   pins: []
 }
 
 function external(options) {
-
-  // TODO: needs to be a seneca feature
-  intern.error = this.util.Eraro({
-    package: 'seneca',
-    override: true,
-    msgmap: external.errors
-  })
-  
   // only allow messages where custom.secret matches
   const secret = options.secret
-  
+
+  // only need secret to allow messages
+  const secret_allows = options.secret_allows
+
+  // must have secret in all cases
+  const secret_required = options.secret_required
+
+  if (secret_required && null == secret) {
+    this.fail('no_secret', { opts: options })
+  }
+
   // normalize the list of pins
   var pins = options.pin || options.pins
   pins = Array.isArray(pins) ? pins : pins.split(/\s*;\s*/)
@@ -33,59 +41,72 @@ function external(options) {
 
   this.prepare(async function() {
     // TODO: seneca.has needs test and fix
-    if(this.private$.actrouter.find({role:'web-handler',hook:'custom'}, true)) {
+    if (
+      this.private$.actrouter.find(
+        { role: 'web-handler', hook: 'custom' },
+        true
+      )
+    ) {
       await this.post({
-        role:'web-handler',hook:'custom',
+        role: 'web-handler',
+        hook: 'custom',
         custom: function(custom) {
           custom.external = custom.external || {}
           custom.external.safe = false
         }
       })
     }
-    
+
     // NOTE: must follow handling of message custom meta data
     this.inward(function(ctxt, data) {
       const remote = data.meta.remote
-      const external = data.meta.custom.external = data.meta.custom.external || {}
-      
+      const external = (data.meta.custom.external =
+        data.meta.custom.external || {})
+
       // Allow any message if it originated locally
-      if(remote) {
+      if (remote) {
         external.safe = false
         external.allow = false
-      }
-      else {
-        Object.assign(external,{
-          safe: true,
-          allow: true,
-          secret: secret,
-          origin: ctxt.seneca.id
-        },external)
+      } else {
+        Object.assign(
+          external,
+          {
+            safe: true,
+            allow: true,
+            secret: secret,
+            origin: ctxt.seneca.id
+          },
+          external
+        )
         return
       }
 
       // Disallow message if secrets don't match.
-      if( null != external.secret && null != secret) {
-        if( external.secret === secret) {
+      if (null != external.secret && null != secret) {
+        if (external.secret === secret) {
           external.allow = true
-        }
-        else {
+        } else if (!secret_allows) {
           return {
             kind: 'error',
             code: 'external-bad-secret'
           }
         }
+      } else if (null == external.secret && secret_required) {
+        return {
+          kind: 'error',
+          code: 'external-secret-required'
+        }
       }
-        
+
       // Allow messages if parent is allowed
-      if( external.allow ) {
+      if (external.allow) {
         return
       }
 
-      if(allow.find(data.msg)) {
+      if ((null == secret || !secret_required) && allow.find(data.msg)) {
         external.allow = true
         return
-      }
-      else {
+      } else {
         return {
           kind: 'error',
           code: 'external-not-allowed'
@@ -93,7 +114,7 @@ function external(options) {
       }
     })
   })
-  
+
   return {
     export: {
       allow: allow
@@ -101,12 +122,4 @@ function external(options) {
   }
 }
 
-external.errors = {
-}
-
-const intern = external.intern = {
-}
-
-
-
-
+//const intern = external.intern = {}

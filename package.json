@@ -1,17 +1,16 @@
 {
   "name": "@seneca/external",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Handle external Seneca messages safely.",
   "main": "external.js",
   "scripts": {
-    "watch": "webpack --watch",
-    "test": "lab -P test -t 80 -I URL,URLSearchParams",
+    "test": "lab -v -L -P test -t 90",
     "prettier": "prettier --write --no-semi --single-quote *.js lib/*.js test/*.js",
     "coveralls": "lab -s -P test -r lcov | coveralls",
     "clean-npm": "rm -rf node_modules package-lock.json",
     "clean-yarn": "rm -rf node_modules yarn.lock",
     "repo-tag": "REPO_VERSION=`node -e \"console.log(require('./package').version)\"`; echo TAG: v$REPO_VERSION; git commit -a -m v$REPO_VERSION; git push; git tag v$REPO_VERSION; git push --tags;",
-    "repo-publish": "npm run repo-tag; npm publish --access public"
+    "repo-publish": "npm run clean-npm && npm i --registry=http://registry.npmjs.org && npm run prettier && npm test && npm run repo-tag && npm publish --access public --registry=http://registry.npmjs.org"
   },
   "repository": {
     "type": "git",
@@ -26,24 +25,23 @@
   "files": [
     "LICENSE",
     "README.md",
-    "external.js",
-    "lib/errors.js"
+    "external.js"
   ],
   "engines": {
     "node": ">=8"
   },
   "dependencies": {},
   "devDependencies": {
-    "@seneca/hapi": "0",
-    "code": "5",
-    "coveralls": "3",
-    "hapi": "17",
-    "inert": "5",
-    "lab": "18",
-    "prettier": "1",
-    "seneca": "senecajs/seneca",
-    "seneca-browser": "0",
-    "seneca-plugin-validator": "0",
-    "seneca-promisify": "0"
+    "@hapi/code": "^6.0.0",
+    "@hapi/hapi": "^18.4.0",
+    "@hapi/inert": "^5.2.2",
+    "@hapi/lab": "^20.4.0",
+    "@seneca/hapi": "^1.0.0",
+    "coveralls": "^3.0.6",
+    "prettier": "^1.18.2",
+    "seneca": "^3.17.0",
+    "seneca-browser": "^0.9.0",
+    "seneca-plugin-validator": "^0.4.0",
+    "seneca-promisify": "^1.1.0"
   }
 }
