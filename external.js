@@ -113,6 +113,17 @@ function external(options) {
         }
       }
     })
+
+    // NOTE: important to log this at info level to rapidly debug service
+    // communication failures. DON'T LOG SECRET!!!
+    this.log.info(
+      'pins',
+      options.pins,
+      'secret_allows',
+      options.secret_allows,
+      'secret_required',
+      options.secret_required
+    )
   })
 
   return {

@@ -1,6 +1,6 @@
 {
   "name": "@seneca/external",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Handle external Seneca messages safely.",
   "main": "external.js",
   "scripts": {
