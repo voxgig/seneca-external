@@ -1,6 +1,6 @@
 {
   "name": "@seneca/external",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Handle external Seneca messages safely.",
   "main": "external.js",
   "scripts": {
@@ -30,7 +30,9 @@
   "engines": {
     "node": ">=8"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@hapi/joi": "^15.1.1"
+  },
   "devDependencies": {
     "@hapi/code": "^6.0.0",
     "@hapi/hapi": "^18.4.0",
